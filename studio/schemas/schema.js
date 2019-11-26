@@ -11,6 +11,7 @@ import post from './documents/post'
 import siteSettings from './documents/siteSettings'
 
 // Object types
+import { instagram, youtube } from './objects/embeds'
 import bodyPortableText from './objects/bodyPortableText'
 import bioPortableText from './objects/bioPortableText'
 import excerptPortableText from './objects/excerptPortableText'
@@ -32,6 +33,8 @@ export default createSchema({
     author,
     mainImage,
     authorReference,
+    instagram,
+    youtube,
     bodyPortableText,
     bioPortableText,
     excerptPortableText
