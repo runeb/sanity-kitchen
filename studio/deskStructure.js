@@ -8,7 +8,10 @@ import React from 'react'
 const hiddenDocTypes = listItem =>
   !['category', 'author', 'post', 'siteSettings'].includes(listItem.getId())
 
-const baseUrl = 'http://localhost:8000'
+const baseUrl =
+  process.env.NODE_ENV === 'production'
+    ? 'https://sanity-kitchen.netlify.com'
+    : 'http://localhost:8000'
 
 export default () =>
   S.list()
