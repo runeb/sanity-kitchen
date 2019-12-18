@@ -3,6 +3,25 @@
   "project": {
     "name": "Kitchen"
   },
+  "__experimental_spaces": [
+    {
+      "name": "production",
+      "title": "Prod",
+      "default": true,
+      "api": {
+        "projectId": "rwmuledy",
+        "dataset": "production"
+      }
+    },
+    {
+      "name": "staging",
+      "title": "Staging",
+      "api": {
+        "projectId": "rwmuledy",
+        "dataset": "staging"
+      }
+    }
+  ],
   "api": {
     "projectId": "rwmuledy",
     "dataset": "production"
