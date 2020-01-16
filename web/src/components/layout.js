@@ -1,24 +1,50 @@
-import React from 'react'
-import Header from './header'
+import React from "react";
+import Header from "./header";
+import Footer from "./footer";
+import "../styles/layout.css";
 
-import '../styles/layout.css'
-import styles from './layout.module.css'
+class Layout extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      scrolled: false
+    };
+  }
 
-const Layout = ({children, onHideNav, onShowNav, showNav, siteTitle}) => (
-  <>
-    <Header siteTitle={siteTitle} onHideNav={onHideNav} onShowNav={onShowNav} showNav={showNav} />
-    <div className={styles.content}>{children}</div>
-    <footer className={styles.footer}>
-      <div className={styles.footerWrapper}>
-        <div className={styles.siteInfo}>
-          &copy; {new Date().getFullYear()}, Built with <a href='https://www.sanity.io'>Sanity</a>{' '}
-          &amp;
-          {` `}
-          <a href='https://www.gatsbyjs.org'>Gatsby</a>
-        </div>
-      </div>
-    </footer>
-  </>
-)
+  componentDidMount() {
+    window.addEventListener("scroll", this.toggleBodyClass);
+    this.toggleBodyClass();
+  }
 
-export default Layout
+  componentWillUnmount() {
+    window.removeEventListener("scroll", this.toggleBodyClass);
+  }
+
+  toggleBodyClass = () => {
+    if (this.state.scrolled && window.scrollY <= 10) {
+      this.setState({ scrolled: false });
+    } else if (!this.state.scrolled && window.scrollY > 10) {
+      this.setState({ scrolled: true });
+    }
+  };
+
+  render() {
+    const { children, onHideNav, onShowNav, showNav, siteTitle } = this.props;
+    const { scrolled } = this.state;
+    return (
+      <>
+        <Header
+          siteTitle={siteTitle}
+          onHideNav={onHideNav}
+          onShowNav={onShowNav}
+          showNav={showNav}
+          scrolled={scrolled}
+        />
+        <>{children}</>
+        <Footer siteTitle={siteTitle} />
+      </>
+    );
+  }
+}
+
+export default Layout;

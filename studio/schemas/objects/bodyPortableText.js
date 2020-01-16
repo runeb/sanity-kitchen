@@ -55,11 +55,7 @@ export default {
       type: 'mainImage',
       options: { hotspot: true }
     },
-    {
-      type: 'instagram'
-    },
-    {
-      type: 'youtube'
-    }
+    { type: 'instagram' },
+    { type: 'youtube' }
   ]
 }

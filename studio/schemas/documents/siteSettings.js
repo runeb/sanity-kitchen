@@ -10,6 +10,14 @@ export default {
       title: 'Title'
     },
     {
+      type: 'color',
+      name: 'primaryColor'
+    },
+    {
+      type: 'color',
+      name: 'secondaryColor'
+    },
+    {
       name: 'description',
       type: 'text',
       title: 'Description',
@@ -20,7 +28,7 @@ export default {
       type: 'array',
       title: 'Keywords',
       description: 'Add keywords that describes your blog.',
-      of: [{type: 'string'}],
+      of: [{ type: 'string' }],
       options: {
         layout: 'tags'
       }
@@ -30,7 +38,7 @@ export default {
       type: 'reference',
       description: 'Publish an author and set a reference to them here.',
       title: 'Author',
-      to: [{type: 'author'}]
+      to: [{ type: 'author' }]
     }
   ]
 }

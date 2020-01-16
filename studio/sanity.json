@@ -38,7 +38,10 @@
     "dashboard-widget-netlify",
     "asset-source-thispersondoesnotexist",
     "@sanity/vision",
-    "asset-source-unsplash"
+    "asset-source-unsplash",
+    "@sanity/code-input",
+    "@sanity/color-input",
+    "mux-input"
   ],
   "parts": [
     {

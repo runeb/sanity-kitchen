@@ -5,9 +5,7 @@ const { isFuture } = require("date-fns");
  * See: https://www.gatsbyjs.org/docs/node-apis/
  */
 
-const { format } = require("date-fns");
-
-async function createBlogPostPages(graphql, actions, reporter) {
+async function createBlogPostPages(pathPrefix = "/", graphql, actions, reporter) {
   const { createPage } = actions;
   const result = await graphql(`
     {
@@ -28,15 +26,12 @@ async function createBlogPostPages(graphql, actions, reporter) {
   if (result.errors) throw result.errors;
 
   const postEdges = (result.data.allSanityPost || {}).edges || [];
-
   postEdges
     .filter(edge => !isFuture(edge.node.publishedAt))
-    .forEach((edge, index) => {
+    .forEach(edge => {
       const { id, slug = {} } = edge.node;
-      const path = `/blog/${slug.current}/`;
-
+      const path = `${pathPrefix}/${slug.current}/`;
       reporter.info(`Creating blog post page: ${path}`);
-
       createPage({
         path,
         component: require.resolve("./src/templates/blog-post.js"),
@@ -46,5 +41,5 @@ async function createBlogPostPages(graphql, actions, reporter) {
 }
 
 exports.createPages = async ({ graphql, actions, reporter }) => {
-  await createBlogPostPages(graphql, actions, reporter);
+  await createBlogPostPages("/blog", graphql, actions, reporter);
 };

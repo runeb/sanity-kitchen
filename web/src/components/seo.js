@@ -1,84 +1,96 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import Helmet from 'react-helmet'
-import {StaticQuery, graphql} from 'gatsby'
-import {imageUrlFor} from '../lib/image-url'
-import {buildImageObj} from '../lib/helpers'
+import React from "react";
+import PropTypes from "prop-types";
+import Helmet from "react-helmet";
+import { StaticQuery, graphql } from "gatsby";
+import { imageUrlFor } from "../lib/image-url";
+import { buildImageObj } from "../lib/helpers";
 
-function SEO ({description, lang, meta, keywords, title, image}) {
+function SEO({ description, lang, meta, keywords, title, image, bodyAttr, gradient }) {
   return (
     <StaticQuery
       query={detailsQuery}
       render={data => {
-        const metaDescription = description || (data.site && data.site.description) || ''
-        const siteTitle = (data.site && data.site.title) || ''
-        const siteAuthor = (data.site && data.site.author && data.site.author.name) || ''
-        const metaImage = (image && image.asset) ? imageUrlFor(buildImageObj(image)).width(1200).url() : ''
+        const metaDescription = description || (data.site && data.site.description) || "";
+        const siteTitle = (data.site && data.site.title) || "";
+        const siteAuthor = (data.site && data.site.author && data.site.author.name) || "";
+        const metaImage =
+          image && image.asset
+            ? imageUrlFor(buildImageObj(image))
+                .width(1200)
+                .url()
+            : "";
 
         return (
           <Helmet
-            htmlAttributes={{lang}}
+            bodyAttributes={bodyAttr}
+            htmlAttributes={{ lang }}
             title={title}
-            titleTemplate={title === siteTitle ? '%s' : `%s | ${siteTitle}`}
+            titleTemplate={title === siteTitle ? "%s" : `%s | ${siteTitle}`}
             meta={[
               {
-                name: 'description',
+                name: "description",
                 content: metaDescription
               },
               {
-                property: 'og:title',
+                property: "og:title",
                 content: title
               },
               {
-                property: 'og:description',
+                property: "og:description",
                 content: metaDescription
               },
               {
-                property: 'og:type',
-                content: 'website'
+                property: "og:type",
+                content: "website"
               },
               {
-                property: 'og:image',
+                property: "og:image",
                 content: metaImage
               },
               {
-                name: 'twitter:card',
-                content: 'summary'
+                name: "twitter:card",
+                content: "summary"
               },
               {
-                name: 'twitter:creator',
+                name: "twitter:creator",
                 content: siteAuthor
               },
               {
-                name: 'twitter:title',
+                name: "twitter:title",
                 content: title
               },
               {
-                name: 'twitter:description',
+                name: "twitter:description",
                 content: metaDescription
               }
             ]
               .concat(
                 keywords && keywords.length > 0
                   ? {
-                    name: 'keywords',
-                    content: keywords.join(', ')
-                  }
+                      name: "keywords",
+                      content: keywords.join(", ")
+                    }
                   : []
               )
               .concat(meta)}
-          />
-        )
+          >
+            <style type="text/css">{`
+              .gradient {
+                background: linear-gradient(90deg, ${gradient.from} 0%, ${gradient.to} 100%);
+              }
+            `}</style>
+          </Helmet>
+        );
       }}
     />
-  )
+  );
 }
 
 SEO.defaultProps = {
-  lang: 'en',
+  lang: "en",
   meta: [],
   keywords: []
-}
+};
 
 SEO.propTypes = {
   description: PropTypes.string,
@@ -86,13 +98,13 @@ SEO.propTypes = {
   meta: PropTypes.array,
   keywords: PropTypes.arrayOf(PropTypes.string),
   title: PropTypes.string.isRequired
-}
+};
 
-export default SEO
+export default SEO;
 
 const detailsQuery = graphql`
   query DefaultSEOQuery {
-    site: sanitySiteSettings(_id: {eq: "siteSettings"}) {
+    site: sanitySiteSettings(_id: { eq: "siteSettings" }) {
       title
       description
       keywords
@@ -101,4 +113,4 @@ const detailsQuery = graphql`
       }
     }
   }
-`
+`;

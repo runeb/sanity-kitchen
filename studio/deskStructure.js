@@ -1,6 +1,7 @@
 import S from '@sanity/desk-tool/structure-builder'
 import MdSettings from 'react-icons/lib/md/settings'
 import MdPerson from 'react-icons/lib/md/person'
+import MdHome from 'react-icons/lib/md/home'
 
 import PreviewPaneChild from './previewPaneChild'
 import React from 'react'
@@ -13,31 +14,34 @@ const baseUrl =
     ? 'https://sanity-kitchen.netlify.com'
     : 'http://localhost:8000'
 
+// Helper function to create an S.view.component for rendering an iframe with an url.
+// We use this for Preview pane
+const previewUrl = url =>
+  S.view
+    .component(() => <iframe style={{ width: '100%', height: '100%' }} frameBorder="0" src={url} />)
+    .title('Preview')
+
 export default () =>
   S.list()
     .title('Content')
     .items([
       S.listItem()
-        .title('Settings')
+        .title('Site settings')
         .icon(MdSettings)
         .child(
           S.document()
             .schemaType('siteSettings')
             .documentId('siteSettings')
-            .views([
-              S.view.form(),
-              S.view
-                .component(() => {
-                  return (
-                    <iframe
-                      style={{ width: '100%', height: '100%' }}
-                      frameBorder="0"
-                      src={baseUrl}
-                    />
-                  )
-                })
-                .title('Preview')
-            ])
+            .views([S.view.form(), previewUrl(baseUrl)])
+        ),
+      S.listItem()
+        .title('Frontpage')
+        .icon(MdHome)
+        .child(
+          S.document()
+            .schemaType('page')
+            .documentId('frontpage')
+            .views([S.view.form(), previewUrl(baseUrl)])
         ),
       S.listItem()
         .title('Blog posts')
