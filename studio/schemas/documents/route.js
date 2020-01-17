@@ -27,12 +27,14 @@ export default {
       name: 'slug',
       type: 'slug'
     },
+    // https://www.sanity.io/docs/schema-types/reference-type
     {
-      name: 'includeFooter',
-      title: 'Include in footer?',
-      description: 'Currently not active',
-      type: 'boolean',
-      fieldset: 'visibility'
+      title: 'Navigation menu',
+      name: 'navMenu',
+      type: 'reference',
+      weak: false,
+      to: [{ type: 'navigationMenu' }],
+      description: 'Which nav menu should be shown, if any'
     },
     {
       name: 'queries',

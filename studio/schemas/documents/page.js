@@ -12,7 +12,14 @@ export default {
     {
       name: 'content',
       type: 'array',
-      of: [{ type: 'image' }, { type: 'hero' }]
+      of: [
+        { type: 'pricing' },
+        { type: 'uiComponentRef' },
+        { type: 'hero' },
+        { type: 'infoRows' },
+        { type: 'ctaColumns' },
+        { type: 'ctaPlug' }
+      ]
     }
   ]
 }
