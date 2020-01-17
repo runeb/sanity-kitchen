@@ -74,11 +74,13 @@ function SEO({ description, lang, meta, keywords, title, image, bodyAttr, gradie
               )
               .concat(meta)}
           >
-            <style type="text/css">{`
+            {gradient && gradient.from && gradient.to && (
+              <style type="text/css">{`
               .gradient {
                 background: linear-gradient(90deg, ${gradient.from} 0%, ${gradient.to} 100%);
               }
             `}</style>
+            )}
           </Helmet>
         );
       }}
