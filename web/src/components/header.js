@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import Icon from "./icon";
 import { cn } from "../lib/helpers";
 
-const Header = ({ onHideNav, onShowNav, showNav, siteTitle, scrolled }) => {
+const Header = ({ onHideNav, onShowNav, showNav, siteTitle, scrolled, navMenuItems = [] }) => {
   let headerClass = "fixed w-full z-30 top-0 text-white";
   headerClass += scrolled ? " bg-white shadow" : "";
 
@@ -48,51 +48,50 @@ const Header = ({ onHideNav, onShowNav, showNav, siteTitle, scrolled }) => {
           </a>
         </div>
 
-        <div className="block lg:hidden pr-4">
-          <button
-            id="nav-toggle"
-            className="flex items-center p-1 text-orange-800 hover:text-gray-900"
-          >
-            <svg
-              className="fill-current h-6 w-6"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
+        {showNav && (
+          <div className="block lg:hidden pr-4">
+            <button
+              id="nav-toggle"
+              className="flex items-center p-1 text-orange-800 hover:text-gray-900"
             >
-              <title>Menu</title>
-              <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
-            </svg>
-          </button>
-        </div>
-
-        <div className={navContentClass} id="nav-content">
-          <ul className="list-reset lg:flex justify-end flex-1 items-center">
-            <li className="mr-3">
-              <a className="inline-block py-2 px-4 text-black font-bold no-underline" href="#">
-                Active
-              </a>
-            </li>
-            <li className="mr-3">
-              <a
-                className="inline-block text-black no-underline hover:text-gray-800 hover:text-underline py-2 px-4"
-                href="#"
+              <svg
+                className="fill-current h-6 w-6"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                link
-              </a>
-            </li>
-            <li className="mr-3">
-              <a
-                className="inline-block text-black no-underline hover:text-gray-800 hover:text-underline py-2 px-4"
-                href="#"
-              >
-                link
-              </a>
-            </li>
-          </ul>
+                <title>Menu</title>
+                <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
+              </svg>
+            </button>
+          </div>
+        )}
 
-          <button id="navAction" className={navActionClass}>
-            Action
-          </button>
-        </div>
+        {showNav && navMenuItems && (
+          <div className={navContentClass} id="nav-content">
+            <ul className="list-reset lg:flex justify-end flex-1 items-center">
+              {navMenuItems.map(i => {
+                const activeClassName = "inline-block py-2 px-4 text-black font-bold no-underline";
+                const className =
+                  "inline-block text-black no-underline hover:text-gray-800 hover:text-underline py-2 px-4";
+                if (i.kind === "button") {
+                  return (
+                    <button id="navAction" className={navActionClass}>
+                      {i.title}
+                    </button>
+                  );
+                }
+                // location.pathname to see if current
+                return (
+                  <li className="mr-3">
+                    <a className={className} href="#">
+                      {i.title}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
       </div>
 
       <hr className="border-b border-gray-100 opacity-25 my-0 py-0" />

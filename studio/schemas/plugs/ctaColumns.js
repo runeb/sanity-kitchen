@@ -12,5 +12,15 @@ export default {
       name: 'columns',
       of: [{ type: 'ctaPlug' }]
     }
-  ]
+  ],
+  preview: {
+    select: {
+      title: 'title'
+    },
+    prepare({ title }) {
+      return {
+        title: `CTA columns: ${title}`
+      }
+    }
+  }
 }

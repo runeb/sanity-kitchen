@@ -5,7 +5,7 @@ const { isFuture } = require("date-fns");
  * See: https://www.gatsbyjs.org/docs/node-apis/
  */
 
-async function createBlogPostPages(pathPrefix = "/", graphql, actions, reporter) {
+async function createBlogPostPages(pathPrefix = "/blog", graphql, actions, reporter) {
   const { createPage } = actions;
   const result = await graphql(`
     {

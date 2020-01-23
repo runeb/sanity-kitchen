@@ -7,5 +7,15 @@ export default {
       type: 'string',
       name: 'name'
     }
-  ]
+  ],
+  preview: {
+    select: {
+      title: 'name'
+    },
+    prepare({ title }) {
+      return {
+        title: `UI reference: ${title}`
+      }
+    }
+  }
 }

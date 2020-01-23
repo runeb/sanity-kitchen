@@ -29,11 +29,12 @@ class Layout extends React.Component {
   };
 
   render() {
-    const { children, onHideNav, onShowNav, showNav, siteTitle } = this.props;
+    const { children, onHideNav, onShowNav, showNav, siteTitle, navMenuItems } = this.props;
     const { scrolled } = this.state;
     return (
       <>
         <Header
+          navMenuItems={navMenuItems}
           siteTitle={siteTitle}
           onHideNav={onHideNav}
           onShowNav={onShowNav}

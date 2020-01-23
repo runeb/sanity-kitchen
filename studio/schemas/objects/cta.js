@@ -28,11 +28,12 @@ export default {
       fieldset: 'link'
     },
     {
-      title: 'Priority/style',
-      name: 'priority',
+      title: 'Kind',
+      name: 'kind',
       type: 'string',
       options: {
-        list: ['primary', 'secondary', 'transparent']
+        layout: 'radio',
+        list: ['button', 'link']
       }
     },
     {
@@ -40,6 +41,7 @@ export default {
       name: 'size',
       type: 'string',
       options: {
+        layout: 'radio',
         list: ['big', 'large', 'default', 'small']
       }
     }

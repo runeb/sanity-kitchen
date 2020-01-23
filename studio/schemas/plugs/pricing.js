@@ -10,5 +10,13 @@ export default {
       type: 'boolean',
       name: 'transparentCTAs'
     }
-  ]
+  ],
+  preview: {
+    select: { title: 'title' },
+    prepare({ title }) {
+      return {
+        title: `Pricing module: ${title}`
+      }
+    }
+  }
 }

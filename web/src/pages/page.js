@@ -35,21 +35,9 @@ export const query = graphql`
     }
   }
 
-  query IndexPageQuery {
-    frontpage: sanityRoute(slug: { current: { eq: "frontpage" } }) {
-      id
-      slug {
-        current
-      }
-      navMenu {
-        items {
-          title
-          kind
-        }
-      }
-      page {
-        _rawContent(resolveReferences: { maxDepth: 10 })
-      }
+  query PageQuery {
+    page: sanityPage(_id: { regex: "/(drafts.|)frontpage/" }) {
+      _rawContent(resolveReferences: { maxDepth: 10 })
     }
     site: sanitySiteSettings(_id: { regex: "/(drafts.|)siteSettings/" }) {
       primaryColor {
@@ -62,10 +50,31 @@ export const query = graphql`
       description
       keywords
     }
+    posts: allSanityPost(
+      limit: 5
+      sort: { fields: [publishedAt], order: DESC }
+      filter: { slug: { current: { ne: null } }, publishedAt: { ne: null } }
+    ) {
+      edges {
+        node {
+          id
+          publishedAt
+          mainImage {
+            ...SanityImage
+            alt
+          }
+          title
+          _rawExcerpt
+          slug {
+            current
+          }
+        }
+      }
+    }
   }
 `;
 
-const IndexPage = props => {
+const Page = props => {
   const { data, errors } = props;
 
   if (errors) {
@@ -84,7 +93,7 @@ const IndexPage = props => {
     );
   }
 
-  const content = data.frontpage.page._rawContent
+  const content = data.frontpage._rawContent
     .filter(c => !c.disabled)
     .map((c, i) => {
       let el = null;
@@ -127,10 +136,8 @@ const IndexPage = props => {
     to: (site.secondaryColor && site.secondaryColor.hex) || "#daae51"
   };
 
-  const navMenuItems = (data.frontpage.navMenu && data.frontpage.navMenu.items) || [];
-
   return (
-    <Layout navMenuItems={navMenuItems}>
+    <Layout>
       <SEO
         title={site.title}
         description={site.description}
@@ -145,4 +152,4 @@ const IndexPage = props => {
   );
 };
 
-export default IndexPage;
+export default Page;
