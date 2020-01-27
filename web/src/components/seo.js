@@ -5,6 +5,8 @@ import { StaticQuery, graphql } from "gatsby";
 import { imageUrlFor } from "../lib/image-url";
 import { buildImageObj } from "../lib/helpers";
 
+// https://ogp.me
+
 function SEO({ description, lang, meta, keywords, title, image, bodyAttr, gradient }) {
   return (
     <StaticQuery
@@ -27,6 +29,10 @@ function SEO({ description, lang, meta, keywords, title, image, bodyAttr, gradie
             title={title}
             titleTemplate={title === siteTitle ? "%s" : `%s | ${siteTitle}`}
             meta={[
+              {
+                name: "google-site-verification",
+                content: "7MfJFsxBVui5UlEBExUFeMW9-Q6g9fPgoaxwzvbqaV0"
+              },
               {
                 name: "description",
                 content: metaDescription

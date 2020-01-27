@@ -19,6 +19,12 @@ module.exports = {
         watchMode: true,
         overlayDrafts: true
       }
+    },
+    {
+      resolve: `gatsby-plugin-google-analytics`,
+      options: {
+        trackingId: "UA-157044418-1"
+      }
     }
   ]
 };
