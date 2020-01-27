@@ -2,16 +2,6 @@ export default {
   title: 'Open Graph',
   name: 'openGraph',
   type: 'object',
-  fieldsets: [
-    {
-      title: 'Image',
-      name: 'image',
-      options: {
-        collapsible: true,
-        collabpsed: true
-      }
-    }
-  ],
   fields: [
     {
       title: 'Title',
@@ -27,8 +17,7 @@ export default {
       title: 'Image',
       description: 'Facebook recommends 1200x630 (will be auto resized)',
       name: 'image',
-      type: 'image',
-      fieldset: 'image'
+      type: 'image'
     },
     {
       name: 'video',

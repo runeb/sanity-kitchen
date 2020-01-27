@@ -49,6 +49,7 @@ export default {
         }
       ]
     },
+    /*
     {
       name: 'categories',
       type: 'array',
@@ -62,6 +63,7 @@ export default {
         }
       ]
     },
+    */
     {
       name: 'body',
       type: 'bodyPortableText',

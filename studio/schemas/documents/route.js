@@ -3,8 +3,7 @@ import { MdLink } from 'react-icons/lib/md'
 export default {
   name: 'route',
   type: 'document',
-  title: 'Route',
-  liveEdit: false,
+  title: 'Landing page routes',
   icon: MdLink,
   fieldsets: [
     {
@@ -14,20 +13,9 @@ export default {
   ],
   fields: [
     {
-      name: 'title',
-      type: 'string',
-      description: 'This title populates meta-tags on the webpage'
-    },
-    {
-      name: 'description',
-      type: 'text',
-      description: 'This description populates meta-tags on the webpage'
-    },
-    {
       name: 'slug',
       type: 'slug'
     },
-    // https://www.sanity.io/docs/schema-types/reference-type
     {
       title: 'Navigation menu',
       name: 'navMenu',
@@ -36,6 +24,7 @@ export default {
       to: [{ type: 'navigationMenu' }],
       description: 'Which nav menu should be shown, if any'
     },
+    /*
     {
       name: 'queries',
       type: 'array',
@@ -52,9 +41,11 @@ export default {
       title: 'Campaign',
       description: 'UTM for campaings'
     },
+    */
     {
       name: 'page',
       type: 'reference',
+      description: 'This is the page we will render at this slug',
       to: [
         {
           type: 'page'
@@ -64,12 +55,14 @@ export default {
     {
       title: 'Open graph',
       name: 'openGraph',
+      description: 'These values populate meta tags',
       type: 'openGraph'
-    },
+    }
     /*
     {
       name: 'experiment',
       type: 'object',
+      description: 'Use this to A/B/n test this route towards different pages',
       fields: [
         {
           name: 'active',
@@ -80,11 +73,15 @@ export default {
         {
           name: 'id',
           type: 'string',
-          title: 'Google Experiment ID'
+          title: 'Google Experiment ID',
+          description:
+            'You will have to create an experiment with a correct number of variations on Google Optimize first'
         },
         {
           name: 'variations',
           type: 'array',
+          description:
+            'These are the different variations (pages) this route will point to in this experiment',
           of: [{ type: 'variation' }],
           validation: Rule =>
             Rule.custom(value => {
@@ -101,7 +98,6 @@ export default {
         }
       ]
     },
-    */
     {
       title: 'Include in sitemap',
       description: 'For search engines. Will be generateed to /sitemap.xml',
@@ -116,10 +112,11 @@ export default {
       type: 'boolean',
       fieldset: 'visibility'
     }
+    */
   ],
   preview: {
     select: {
-      title: 'title',
+      title: 'openGraph.title',
       subtitle: 'slug.current',
       variations: 'experiment.variations'
     },

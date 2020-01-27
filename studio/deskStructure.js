@@ -5,8 +5,7 @@ import MdHome from 'react-icons/lib/md/home'
 
 import React from 'react'
 
-const hiddenDocTypes = listItem =>
-  !['category', 'author', 'post', 'siteSettings'].includes(listItem.getId())
+const hiddenDocTypes = listItem => !['post', 'siteSettings'].includes(listItem.getId())
 
 const baseUrl =
   process.env.NODE_ENV === 'development'
@@ -86,15 +85,6 @@ export default () =>
             .title('Blog posts')
             .child(documentId => PreviewPaneChild('post', documentId))
         ),
-      S.listItem()
-        .title('Authors')
-        .icon(MdPerson)
-        .schemaType('author')
-        .child(S.documentTypeList('author').title('Authors')),
-      S.listItem()
-        .title('Categories')
-        .schemaType('category')
-        .child(S.documentTypeList('category').title('Categories')),
       // This returns an array of all the document types
       // defined in schema.js. We filter out those that we have
       // defined the structure above
