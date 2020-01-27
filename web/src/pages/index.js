@@ -45,6 +45,7 @@ export const query = graphql`
         items {
           title
           kind
+          link
         }
       }
       page {

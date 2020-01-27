@@ -25,7 +25,7 @@ const Header = ({ onHideNav, onShowNav, showNav, siteTitle, scrolled, navMenuIte
     <nav id="header" className={headerClass}>
       <div className="w-full container mx-auto flex flex-wrap items-center justify-between mt-0 py-2">
         <div className="pl-4 flex items-center">
-          <a id="siteTitle" className={titleClass} href="#">
+          <Link id="siteTitle" className={titleClass} to="/">
             <svg
               className="h-8 fill-current inline"
               xmlns="http://www.w3.org/2000/svg"
@@ -45,7 +45,7 @@ const Header = ({ onHideNav, onShowNav, showNav, siteTitle, scrolled, navMenuIte
               />
             </svg>{" "}
             {siteTitle}
-          </a>
+          </Link>
         </div>
 
         {showNav && (
@@ -81,11 +81,13 @@ const Header = ({ onHideNav, onShowNav, showNav, siteTitle, scrolled, navMenuIte
                   );
                 }
                 // location.pathname to see if current
+                const link = i.link || "#";
+                console.log("link", i);
                 return (
                   <li className="mr-3">
-                    <a className={className} href="#">
+                    <Link className="mr-3" to={link}>
                       {i.title}
-                    </a>
+                    </Link>
                   </li>
                 );
               })}
