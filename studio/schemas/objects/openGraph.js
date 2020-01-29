@@ -17,13 +17,15 @@ export default {
       title: 'Image',
       description: 'Facebook recommends 1200x630 (will be auto resized)',
       name: 'image',
-      type: 'image'
-    },
+      type: 'mainImage'
+    }
+    /*
     {
       name: 'video',
       title: 'Video',
       type: 'mux.video'
     }
+    */
   ],
   preview: {
     select: {

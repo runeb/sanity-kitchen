@@ -53,6 +53,13 @@ export default {
       ]
     },
     {
+      title: 'Use site title?',
+      description:
+        'Use the site settings title as page title instead of the title on the referenced page',
+      name: 'useSiteTitle',
+      type: 'boolean'
+    },
+    {
       title: 'Open graph',
       name: 'openGraph',
       description: 'These values populate meta tags',
@@ -114,6 +121,9 @@ export default {
     }
     */
   ],
+  initialValue: {
+    useSiteTitle: false
+  },
   preview: {
     select: {
       title: 'openGraph.title',

@@ -40,6 +40,9 @@
   "dependencies": {
     "gatsby-image": "^2.0.41",
     "gatsby-plugin-google-analytics": "^2.1.34",
+    "gatsby-plugin-sharp": "^2.4.4",
+    "gatsby-source-filesystem": "^2.1.47",
+    "gatsby-transformer-sharp": "^2.3.13",
     "get-youtube-id": "^1.0.1",
     "react-instagram-embed": "^1.5.0",
     "react-youtube": "^7.9.0"

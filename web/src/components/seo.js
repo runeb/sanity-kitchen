@@ -22,12 +22,14 @@ function SEO({ description, lang, meta, keywords, title, image, bodyAttr, gradie
                 .url()
             : "";
 
+        const pageTitle = title || siteTitle;
+
         return (
           <Helmet
             bodyAttributes={bodyAttr}
             htmlAttributes={{ lang }}
-            title={title}
-            titleTemplate={title === siteTitle ? "%s" : `%s | ${siteTitle}`}
+            title={pageTitle}
+            titleTemplate={pageTitle === siteTitle ? siteTitle : `%s | ${siteTitle}`}
             meta={[
               {
                 name: "google-site-verification",
@@ -112,12 +114,11 @@ export default SEO;
 
 const detailsQuery = graphql`
   query DefaultSEOQuery {
-    site: sanitySiteSettings(_id: { eq: "siteSettings" }) {
+    site: sanitySiteSettings(_id: { regex: "/(drafts.|)siteSettings/" }) {
       title
-      description
-      keywords
-      author {
-        name
+      openGraph {
+        title
+        description
       }
     }
   }

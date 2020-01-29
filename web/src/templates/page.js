@@ -13,31 +13,19 @@ import SEO from "../components/seo";
 import Layout from "../containers/layout";
 
 export const query = graphql`
-  fragment SanityImage on SanityMainImage {
-    crop {
-      _key
-      _type
-      top
-      bottom
-      left
-      right
-    }
-    hotspot {
-      _key
-      _type
-      x
-      y
-      height
-      width
-    }
-    asset {
-      _id
-    }
-  }
-
-  query PageQuery {
-    page: sanityPage(_id: { regex: "/(drafts.|)frontpage/" }) {
-      _rawContent(resolveReferences: { maxDepth: 10 })
+  query PageTemplateQuery($id: String!) {
+    route: sanityRoute(id: { eq: $id }) {
+      slug {
+        current
+      }
+      useSiteTitle
+      page {
+        title
+        _rawContent(resolveReferences: { maxDepth: 10 })
+      }
+      navMenu {
+        _rawItems(resolveReferences: { maxDepth: 10 })
+      }
     }
     site: sanitySiteSettings(_id: { regex: "/(drafts.|)siteSettings/" }) {
       primaryColor {
@@ -47,27 +35,11 @@ export const query = graphql`
         hex
       }
       title
-      description
-      keywords
-    }
-    posts: allSanityPost(
-      limit: 5
-      sort: { fields: [publishedAt], order: DESC }
-      filter: { slug: { current: { ne: null } }, publishedAt: { ne: null } }
-    ) {
-      edges {
-        node {
-          id
-          publishedAt
-          mainImage {
-            ...SanityImage
-            alt
-          }
-          title
-          _rawExcerpt
-          slug {
-            current
-          }
+      openGraph {
+        title
+        description
+        image {
+          ...SanityImage
         }
       }
     }
@@ -93,7 +65,7 @@ const Page = props => {
     );
   }
 
-  const content = data.frontpage._rawContent
+  const content = data.route.page._rawContent
     .filter(c => !c.disabled)
     .map((c, i) => {
       let el = null;
@@ -136,10 +108,13 @@ const Page = props => {
     to: (site.secondaryColor && site.secondaryColor.hex) || "#daae51"
   };
 
+  const menuItems = data.route.navMenu && (data.route.navMenu._rawItems || []);
+  const pageTitle = !data.route.useSiteTitle && data.route.page.title;
+
   return (
-    <Layout>
+    <Layout navMenuItems={menuItems}>
       <SEO
-        title={site.title}
+        title={pageTitle}
         description={site.description}
         keywords={site.keywords}
         bodyAttr={{

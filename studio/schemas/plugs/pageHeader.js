@@ -7,7 +7,7 @@ export default {
       title: 'title',
       illustration: 'illustration'
     },
-    prepare({title, illustration}) {
+    prepare({ title, illustration }) {
       return {
         title: 'Page header',
         subtitle: title,
@@ -34,7 +34,7 @@ export default {
     {
       title: 'Image (deprecated)',
       name: 'image',
-      type: 'image'
+      type: 'mainImage'
     }
   ]
 }
