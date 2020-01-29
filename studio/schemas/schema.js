@@ -7,7 +7,7 @@ import schemaTypes from 'all:part:@sanity/base/schema-type'
 // document schemas
 import navMenu from './documents/navMenu'
 import author from './documents/author'
-//import category from './documents/category'
+import category from './documents/category'
 import post from './documents/post'
 import page from './documents/page'
 import siteSettings from './documents/siteSettings'
@@ -48,7 +48,7 @@ export default createSchema({
       post,
       navMenu,
       page,
-      //category,
+      category,
       author,
       mainImage,
       authorReference,
