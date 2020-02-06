@@ -5,19 +5,26 @@ import MdHome from 'react-icons/lib/md/home'
 
 import React from 'react'
 
-const hiddenDocTypes = listItem => !['post', 'siteSettings'].includes(listItem.getId())
+const hiddenDocTypes = listItem => !['post', 'siteSettings', 'author'].includes(listItem.getId())
 
-const baseUrl =
-  process.env.NODE_ENV === 'development'
-    ? 'http://localhost:8000'
-    : 'https://sanity-kitchen-3217332552.gtsb.io'
+const previewBaseUrl = {
+  development: 'http://localhost:8000',
+  staging: 'https://sanity-kitchen-3217332552.gtsb.io',
+  production: 'https://sanity-kitchen-3217332552.gtsb.io'
+}
+
+const baseUrl = previewBaseUrl[process.env.NODE_ENV] || previewBaseUrl.development
 
 const path = document => {
   if (!document) {
     return
   }
-  if (document._type === 'post') {
-    return `blog/${document.slug.current}`
+
+  switch (document._type) {
+    case 'post':
+      return `blog/${document.slug.current}`
+    case 'siteSettings':
+      return ''
   }
 }
 
@@ -31,7 +38,11 @@ const PreviewPaneChild = (schemaType, documentId) => {
         .component(params => {
           const { displayed } = params.document
           if (!displayed) {
-            return null
+            return <p>Nothing to display</p>
+          }
+          const documentPath = path(displayed)
+          if (!documentPath) {
+            return <p>No path to display</p>
           }
           return (
             <iframe
@@ -39,8 +50,8 @@ const PreviewPaneChild = (schemaType, documentId) => {
                 width: '100%',
                 height: '100%'
               }}
-              frameBorder="0"
-              src={`${baseUrl}/${path(displayed)}`}
+              frameBorder={'0'}
+              src={`${baseUrl}/${documentPath}`}
             />
           )
         })
@@ -85,6 +96,11 @@ export default () =>
             .title('Blog posts')
             .child(documentId => PreviewPaneChild('post', documentId))
         ),
+      S.listItem()
+        .title('Authors')
+        .icon(MdPerson)
+        .schemaType('author')
+        .child(S.documentTypeList('author').title('Authors')),
       // This returns an array of all the document types
       // defined in schema.js. We filter out those that we have
       // defined the structure above

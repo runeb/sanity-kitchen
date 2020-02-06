@@ -1,22 +1,28 @@
 import React from "react";
 import { graphql, Link } from "gatsby";
+import Img from "gatsby-image";
 import { mapEdgesToNodes } from "../lib/helpers";
 /*
 import BlogPostPreviewGrid from "../components/blog-post-preview-grid";
 import Container from "../components/container";
 */
-import GraphQLErrorList from "../components/graphql-error-list";
 import SEO from "../components/seo";
 import Layout from "../containers/layout";
-import { getFluidGatsbyImage } from "gatsby-source-sanity";
+import { getFluidGatsbyImage, getFixedGatsbyImage } from "gatsby-source-sanity";
 import clientConfig from "../../client-config";
 import PortableText from "../components/portableText";
+import Errors from "../components/errors";
+import client from "@sanity/client";
+
+import imageUrlBuilder from "@sanity/image-url";
+import urlBuilder from "@sanity/image-url";
+const builder = imageUrlBuilder(client(clientConfig.sanity));
 
 export const query = graphql`
   query BlogPageQuery {
     cover: file(relativePath: { eq: "cover.jpg" }) {
       childImageSharp {
-        fixed(width: 960, height: 480) {
+        fixed(width: 2400) {
           ...GatsbyImageSharpFixed
         }
       }
@@ -34,7 +40,6 @@ export const query = graphql`
           publishedAt
           mainImage {
             ...SanityImage
-            alt
           }
           title
           _rawExcerpt
@@ -55,57 +60,53 @@ export const query = graphql`
   }
 `;
 
-const LeadBlogPost = ({
-  categories,
-  authors,
-  _rawExcerpt,
-  title,
-  slug,
-  mainImage,
-  publishedAt
-}) => {
-  const mainImageFluid = getFluidGatsbyImage(
-    mainImage.asset._id,
-    { maxWidth: 960 },
-    clientConfig.sanity
-  );
+const blogNodeToPresentation = node => {
+  return {
+    title: node.title,
+    excerpt: node._rawExcerpt,
+    slug: node.slug.current,
+    mainImage: node.mainImage,
+    mainImageFluid:
+      node.mainImage &&
+      node.mainImage.asset &&
+      getFluidGatsbyImage(node.mainImage.asset, { maxWidth: 960 }, clientConfig.sanity),
+    authorImageFluid:
+      node.authors &&
+      node.authors.length &&
+      getFluidGatsbyImage(
+        node.authors[0].author.image.asset,
+        { maxWidth: 100 },
+        clientConfig.sanity
+      ),
+    authorName: node.authors && node.authors.length && node.authors[0].author.name
+  };
+};
 
-  const authorImageFluid =
-    authors &&
-    authors.length &&
-    getFluidGatsbyImage(authors[0].author.image.asset._id, { maxWidth: 150 }, clientConfig.sanity);
-
-  const authorName = authors && authors.length && authors[0].author.name;
-
-  const categoryTitle = categories && categories.length && categories[0].title;
-
+const LeadBlogPost = ({ title, slug, mainImageFluid, excerpt, authorImageFluid, authorName }) => {
   return (
     <div className="flex h-full bg-white rounded overflow-hidden shadow-lg">
-      <Link to={`/blog/${slug.current}`} className="flex flex-wrap no-underline hover:no-underline">
+      <Link to={`/blog/${slug}`} className="flex flex-wrap no-underline hover:no-underline">
         <div className="w-full md:w-2/3 rounded-t">
-          <img src={mainImageFluid.src} className="h-full w-full shadow"></img>
+          {mainImageFluid && <Img fluid={mainImageFluid} className="h-full w-full shadow" alt="" />}
         </div>
 
         <div className="w-full md:w-1/3 flex flex-col flex-grow flex-shrink">
           <div className="flex-1 bg-white rounded-t rounded-b-none overflow-hidden shadow-lg">
-            <p className="w-full text-gray-600 text-xs md:text-sm pt-6 px-6">
-              {(categoryTitle || "").toUpperCase()}
-            </p>
-            <div className="w-full font-bold text-xl text-gray-900 px-6">{title}</div>
+            <div className="w-full font-bold text-xl text-gray-900 px-6 py-2">{title}</div>
             <p className="text-gray-800 font-serif text-base px-6 mb-5">
-              <PortableText blocks={_rawExcerpt} />
+              <PortableText blocks={excerpt} />
             </p>
           </div>
 
           <div className="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow-lg p-6">
             <div className="flex items-center">
               {authorImageFluid ? (
-                <img
+                <Img
                   className="w-8 h-8 rounded-full mr-4 avatar"
                   data-tippy-content="Author Name"
-                  src={authorImageFluid.src}
+                  fixed={authorImageFluid}
                   alt="Avatar of Author"
-                ></img>
+                ></Img>
               ) : (
                 <span />
               )}
@@ -118,27 +119,63 @@ const LeadBlogPost = ({
   );
 };
 
+const BlogRow = props =>
+  props.posts.map((p, i) => <BlogBox key={i} {...p} size={props.posts.length} />);
+
+const BlogBox = ({ title, size, slug, mainImageFluid, authorImageFluid, authorName, excerpt }) => (
+  <div className={`w-full md:w-1/${size} p-6 flex flex-col flex-grow flex-shrink`}>
+    <div className="flex-1 bg-white rounded-t rounded-b-none overflow-hidden shadow-lg">
+      <Link to={`blog/${slug}`} className="flex flex-wrap no-underline hover:no-underline">
+        <Img fluid={mainImageFluid} alt="" className="h-full w-full rounded-t pb-6"></Img>
+        <div className="w-full font-bold text-xl text-gray-900 px-6 py-2">{title}</div>
+        <p className="text-gray-800 font-serif text-base px-6 mb-5">
+          <PortableText blocks={excerpt} />
+        </p>
+      </Link>
+    </div>
+    <div className="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow-lg p-6">
+      <div className="flex items-center">
+        {authorImageFluid && (
+          <Img
+            className="w-8 h-8 rounded-full mr-4 avatar"
+            data-tippy-content="Author Name"
+            fluid={authorImageFluid}
+            alt="Avatar of Author"
+          ></Img>
+        )}
+        <p className="text-gray-600 text-xs md:text-sm">{authorName}</p>
+      </div>
+    </div>
+  </div>
+);
+
 const BlogPage = props => {
   const { data, errors } = props;
 
   if (errors) {
-    return (
-      <Layout>
-        <GraphQLErrorList errors={errors} />
-      </Layout>
-    );
+    return <Errors errors={errors} />;
   }
 
-  const postNodes = data && data.posts && mapEdgesToNodes(data.posts);
-  console.log("posts", postNodes);
+  const postNodes = data && data.posts && mapEdgesToNodes(data.posts).map(blogNodeToPresentation);
 
-  const style = {
-    "background-image": `url("${data.cover.childImageSharp.fixed.src}")`,
-    height: "60vh",
-    "max-height": "460px"
-  };
+  let headerBackgroundStyle = {};
+  if (data.cover) {
+    const backgroundImageUrl = data.cover.childImageSharp.fixed.src;
+    headerBackgroundStyle = {
+      "background-image": `url("${backgroundImageUrl}")`,
+      height: "60vh",
+      "max-height": "460px"
+    };
+  }
 
-  const lead = postNodes[0];
+  const lead = postNodes.shift();
+  const rowLen = [3, 2, 3];
+  const rows = [];
+
+  while (postNodes.length) {
+    const len = rowLen.shift() || 2;
+    rows.push(postNodes.splice(0, len));
+  }
 
   return (
     <Layout navMenuItems={[]}>
@@ -148,12 +185,7 @@ const BlogPage = props => {
           class: "bg-gray-200 font-sans leading-normal tracking-normal"
         }}
       />
-      <div className="w-full m-0 p-0 bg-cover bg-bottom" style={style}>
-        <div className="container max-w-4xl mx-auto pt-16 md:pt-32 text-center break-normal">
-          {/* Title */}
-          <p className="text-white font-extrabold text-3xl md:text-5xl">Blog</p>
-        </div>
-      </div>
+      <div className="w-full m-0 p-0 bg-cover bg-bottom" style={headerBackgroundStyle}></div>
 
       {/* Container */}
       <div className="container px-4 md:px-0 max-w-6xl mx-auto -mt-32">
@@ -165,218 +197,9 @@ const BlogPage = props => {
 
             {/* Posts Container */}
             <div className="flex flex-wrap justify-between pt-12 -mx-6">
-              {/* 1/3 col  */}
-              <div className="w-full md:w-1/3 p-6 flex flex-col flex-grow flex-shrink">
-                <div className="flex-1 bg-white rounded-t rounded-b-none overflow-hidden shadow-lg">
-                  <a href="#" className="flex flex-wrap no-underline hover:no-underline">
-                    <img
-                      src="https://source.unsplash.com/collection/225/800x600"
-                      className="h-64 w-full rounded-t pb-6"
-                    ></img>
-                    <p className="w-full text-gray-600 text-xs md:text-sm px-6">GETTING STARTED</p>
-                    <div className="w-full font-bold text-xl text-gray-900 px-6">
-                      Lorem ipsum dolor sit amet.
-                    </div>
-                    <p className="text-gray-800 font-serif text-base px-6 mb-5">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at ipsum eu
-                      nunc commodo posuere et sit amet ligula.
-                    </p>
-                  </a>
-                </div>
-                <div className="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow-lg p-6">
-                  <div className="flex items-center justify-between">
-                    <img
-                      className="w-8 h-8 rounded-full mr-4 avatar"
-                      data-tippy-content="Author Name"
-                      src="http://i.pravatar.cc/300"
-                      alt="Avatar of Author"
-                    ></img>
-                    <p className="text-gray-600 text-xs md:text-sm">1 MIN READ</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* 1/3 col  */}
-              <div className="w-full md:w-1/3 p-6 flex flex-col flex-grow flex-shrink">
-                <div className="flex-1 bg-white rounded-t rounded-b-none overflow-hidden shadow-lg">
-                  <a href="#" className="flex flex-wrap no-underline hover:no-underline">
-                    <img
-                      src="https://source.unsplash.com/collection/3106804/800x600"
-                      className="h-64 w-full rounded-t pb-6"
-                    ></img>
-                    <p className="w-full text-gray-600 text-xs md:text-sm px-6">GETTING STARTED</p>
-                    <div className="w-full font-bold text-xl text-gray-900 px-6">
-                      Lorem ipsum dolor sit amet.
-                    </div>
-                    <p className="text-gray-800 font-serif text-base px-6 mb-5">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit. ipsum dolor sit amet,
-                      consectetur adipiscing elit. Aliquam at ip Aliquam at ipsum eu nunc commodo
-                      posuere et sit amet ligula.
-                    </p>
-                  </a>
-                </div>
-                <div className="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow-lg p-6">
-                  <div className="flex items-center justify-between">
-                    <img
-                      className="w-8 h-8 rounded-full mr-4 avatar"
-                      data-tippy-content="Author Name"
-                      src="http://i.pravatar.cc/300"
-                      alt="Avatar of Author"
-                    ></img>
-                    <p className="text-gray-600 text-xs md:text-sm">1 MIN READ</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* 1/3 col  */}
-              <div className="w-full md:w-1/3 p-6 flex flex-col flex-grow flex-shrink">
-                <div className="flex-1 bg-white rounded-t rounded-b-none overflow-hidden shadow-lg">
-                  <a href="#" className="flex flex-wrap no-underline hover:no-underline">
-                    <img
-                      src="https://source.unsplash.com/collection/539527/800x600"
-                      className="h-64 w-full rounded-t pb-6"
-                    ></img>
-                    <p className="w-full text-gray-600 text-xs md:text-sm px-6">GETTING STARTED</p>
-                    <div className="w-full  font-bold text-xl text-gray-900 px-6">
-                      Lorem ipsum dolor sit amet.
-                    </div>
-                    <p className="text-gray-800 font-serif text-base px-6 mb-5">
-                      Lorem ipsum eu nunc commodo posuere et sit amet ligula.
-                    </p>
-                  </a>
-                </div>
-                <div className="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow-lg p-6">
-                  <div className="flex items-center justify-between">
-                    <img
-                      className="w-8 h-8 rounded-full mr-4 avatar"
-                      data-tippy-content="Author Name"
-                      src="http://i.pravatar.cc/300"
-                      alt="Avatar of Author"
-                    ></img>
-                    <p className="text-gray-600 text-xs md:text-sm">1 MIN READ</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* 1/2 col  */}
-              <div className="w-full md:w-1/2 p-6 flex flex-col flex-grow flex-shrink">
-                <div className="flex-1 bg-white rounded-t rounded-b-none overflow-hidden shadow-lg">
-                  <a href="#" className="flex flex-wrap no-underline hover:no-underline">
-                    <img
-                      src="https://source.unsplash.com/collection/3657445/800x600"
-                      className="h-full w-full rounded-t pb-6"
-                    ></img>
-                    <p className="w-full text-gray-600 text-xs md:text-sm px-6">GETTING STARTED</p>
-                    <div className="w-full font-bold text-xl text-gray-900 px-6">
-                      Lorem ipsum dolor sit amet.
-                    </div>
-                    <p className="text-gray-800 font-serif text-base px-6 mb-5">
-                      Lorem ipsum eu nunc commodo posuere et sit amet ligula.
-                    </p>
-                  </a>
-                </div>
-                <div className="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow-lg p-6">
-                  <div className="flex items-center justify-between">
-                    <img
-                      className="w-8 h-8 rounded-full mr-4 avatar"
-                      data-tippy-content="Author Name"
-                      src="http://i.pravatar.cc/300"
-                      alt="Avatar of Author"
-                    ></img>
-                    <p className="text-gray-600 text-xs md:text-sm">1 MIN READ</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* 1/2 col  */}
-              <div className="w-full md:w-1/2 p-6 flex flex-col flex-grow flex-shrink">
-                <div className="flex-1 flex-row bg-white rounded-t rounded-b-none overflow-hidden shadow-lg">
-                  <a href="#" className="flex flex-wrap no-underline hover:no-underline">
-                    <img
-                      src="https://source.unsplash.com/collection/764827/800x600"
-                      className="h-full w-full rounded-t pb-6"
-                    ></img>
-                    <p className="w-full text-gray-600 text-xs md:text-sm px-6">GETTING STARTED</p>
-                    <div className="w-full font-bold text-xl text-gray-900 px-6">
-                      Lorem ipsum dolor sit amet.
-                    </div>
-                    <p className="text-gray-800 font-serif text-base px-6 mb-5">
-                      Lorem ipsum eu nunc commodo posuere et sit amet ligula.
-                    </p>
-                  </a>
-                </div>
-                <div className="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow-lg p-6">
-                  <div className="flex items-center justify-between">
-                    <img
-                      className="w-8 h-8 rounded-full mr-4 avatar"
-                      data-tippy-content="Author Name"
-                      src="http://i.pravatar.cc/300"
-                      alt="Avatar of Author"
-                    ></img>
-                    <p className="text-gray-600 text-xs md:text-sm">1 MIN READ</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* 2/3 col  */}
-              <div className="w-full md:w-2/3 p-6 flex flex-col flex-grow flex-shrink">
-                <div className="flex-1 bg-white rounded-t rounded-b-none overflow-hidden shadow-lg">
-                  <a href="#" className="flex flex-wrap no-underline hover:no-underline">
-                    <img
-                      src="https://source.unsplash.com/collection/325867/800x600"
-                      className="h-full w-full rounded-t pb-6"
-                    ></img>
-                    <p className="w-full text-gray-600 text-xs md:text-sm px-6">GETTING STARTED</p>
-                    <div className="w-full font-bold text-xl text-gray-900 px-6">
-                      Lorem ipsum dolor sit amet.
-                    </div>
-                    <p className="text-gray-800 font-serif text-base px-6 mb-5">
-                      Lorem ipsum eu nunc commodo posuere et sit amet ligula.
-                    </p>
-                  </a>
-                </div>
-                <div className="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow-lg p-6">
-                  <div className="flex items-center justify-between">
-                    <img
-                      className="w-8 h-8 rounded-full mr-4 avatar"
-                      data-tippy-content="Author Name"
-                      src="http://i.pravatar.cc/300"
-                      alt="Avatar of Author"
-                    ></img>
-                    <p className="text-gray-600 text-xs md:text-sm">1 MIN READ</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* 1/3 col  */}
-              <div className="w-full md:w-1/3 p-6 flex flex-col flex-grow flex-shrink">
-                <div className="flex-1 bg-white rounded-t rounded-b-none overflow-hidden shadow-lg">
-                  <a href="#" className="flex flex-wrap no-underline hover:no-underline">
-                    <img
-                      src="https://source.unsplash.com/collection/1118905/800x600"
-                      className="h-full w-full rounded-t pb-6"
-                    ></img>
-                    <p className="w-full text-gray-600 text-xs md:text-sm px-6">GETTING STARTED</p>
-                    <div className="w-full font-bold text-xl text-gray-900 px-6">
-                      Lorem ipsum dolor sit amet.
-                    </div>
-                    <p className="text-gray-800 font-serif text-base px-6 mb-5">
-                      Lorem ipsum eu nunc commodo posuere et sit amet ligula.
-                    </p>
-                  </a>
-                </div>
-                <div className="flex-none mt-auto bg-white rounded-b rounded-t-none overflow-hidden shadow-lg p-6">
-                  <div className="flex items-center justify-between">
-                    <img
-                      className="w-8 h-8 rounded-full mr-4 avatar"
-                      data-tippy-content="Author Name"
-                      src="http://i.pravatar.cc/300"
-                      alt="Avatar of Author"
-                    ></img>
-                    <p className="text-gray-600 text-xs md:text-sm">1 MIN READ</p>
-                  </div>
-                </div>
-              </div>
+              {rows.map((posts, i) => (
+                <BlogRow posts={posts} key={i} />
+              ))}
             </div>
             {/* / Post Content */}
           </div>
@@ -384,10 +207,10 @@ const BlogPage = props => {
           {/* Subscribe */}
           <div className="container font-sans bg-teal-100 rounded mt-8 p-4 md:p-24 text-center">
             <h2 className="font-bold break-normal text-2xl md:text-4xl">
-              Subscribe to Ghostwind CSS
+              Subscribe to our newsletter
             </h2>
             <h3 className="font-bold break-normal font-normal text-gray-600 text-base md:text-xl">
-              Get the latest posts delivered right to your inbox
+              You'll receive around 1 post per week
             </h3>
             <div className="w-full text-center pt-4">
               <form action="#">

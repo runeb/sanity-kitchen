@@ -2,13 +2,6 @@
   "providers": {
     "mode": "append",
     "redirectOnSingle": false,
-    "entries": [
-      {
-        "name": "custom",
-        "title": "Custom",
-        "url": "http://localhost:3334/login/google",
-        "logo": "/static/logo.png"
-      }
-    ]
+    "entries": []
   }
 }

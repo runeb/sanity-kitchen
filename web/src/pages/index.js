@@ -7,6 +7,7 @@ import Page from "../templates/page";
 
 export const query = graphql`
   fragment SanityImage on SanityMainImage {
+    alt
     crop {
       _key
       _type
@@ -25,6 +26,14 @@ export const query = graphql`
     }
     asset {
       _id
+      metadata {
+        lqip
+        dimensions {
+          aspectRatio
+          width
+          height
+        }
+      }
     }
   }
 
