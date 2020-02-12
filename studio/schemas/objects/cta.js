@@ -35,7 +35,8 @@ export default {
         layout: 'radio',
         list: ['button', 'link']
       }
-    },
+    }
+    /*
     {
       title: 'Size',
       name: 'size',
@@ -45,6 +46,7 @@ export default {
         list: ['big', 'large', 'default', 'small']
       }
     }
+    */
   ],
   preview: {
     select: {

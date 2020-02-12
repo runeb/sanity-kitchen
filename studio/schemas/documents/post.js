@@ -33,6 +33,11 @@ export default {
       title: 'Main image'
     },
     {
+      name: 'video',
+      type: 'mux.video',
+      title: 'Video'
+    },
+    {
       name: 'excerpt',
       type: 'excerptPortableText',
       title: 'Excerpt',

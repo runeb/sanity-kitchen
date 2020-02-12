@@ -65,7 +65,7 @@ const BlogPostTemplate = props => {
     return <Errors errors={errors} />;
   }
   return (
-    <Layout navMenuItems={[]}>
+    <Layout navMenuItems={[]} textWhite={false}>
       <SEO
         title={post.title}
         image={post.mainImage}

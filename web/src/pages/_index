@@ -1,8 +1,6 @@
 import React from "react";
 import { graphql } from "gatsby";
-
 import Errors from "../components/errors";
-
 import Page from "../templates/page";
 
 export const query = graphql`
@@ -45,11 +43,7 @@ export const query = graphql`
       }
       useSiteTitle
       page {
-        title
-        _rawContent(resolveReferences: { maxDepth: 10 })
-      }
-      navMenu {
-        _rawItems(resolveReferences: { maxDepth: 10 })
+        ...PageInfo
       }
     }
     site: sanitySiteSettings(_id: { regex: "/(drafts.|)siteSettings/" }) {

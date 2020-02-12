@@ -13,13 +13,14 @@ import page from './documents/page'
 import siteSettings from './documents/siteSettings'
 import route from './documents/route'
 
+import experiment from './objects/experiment'
 import simpleBlockContent from './objects/simpleBlockContent'
 
 import * as plugs from './plugs'
 import plugDefaultFields from './plugs/_plugDefaultFields'
 
 // Object types
-import { instagram, youtube } from './objects/embeds'
+import { instagram, videoEmbed } from './objects/embeds'
 import cta from './objects/cta'
 import bodyPortableText from './objects/bodyPortableText'
 import excerptPortableText from './objects/excerptPortableText'
@@ -40,6 +41,7 @@ export default createSchema({
     .concat([
       variation,
       openGraph,
+      experiment,
       route,
       link,
       simpleBlockContent,
@@ -53,7 +55,7 @@ export default createSchema({
       mainImage,
       authorReference,
       instagram,
-      youtube,
+      videoEmbed,
       bodyPortableText,
       excerptPortableText
     ])

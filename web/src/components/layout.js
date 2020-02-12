@@ -29,7 +29,15 @@ class Layout extends React.Component {
   };
 
   render() {
-    const { children, onHideNav, onShowNav, showNav, siteTitle, navMenuItems } = this.props;
+    const {
+      children,
+      onHideNav,
+      onShowNav,
+      showNav,
+      siteTitle,
+      navMenuItems,
+      textWhite = true
+    } = this.props;
     const { scrolled } = this.state;
     return (
       <>
@@ -40,6 +48,7 @@ class Layout extends React.Component {
           onShowNav={onShowNav}
           showNav={showNav}
           scrolled={scrolled}
+          textWhite={textWhite}
         />
         <>{children}</>
         <Footer siteTitle={siteTitle} />

@@ -14,15 +14,8 @@ export default {
   fields: [
     {
       name: 'slug',
-      type: 'slug'
-    },
-    {
-      title: 'Navigation menu',
-      name: 'navMenu',
-      type: 'reference',
-      weak: false,
-      to: [{ type: 'navigationMenu' }],
-      description: 'Which nav menu should be shown, if any'
+      type: 'slug',
+      title: 'Path'
     },
     /*
     {
@@ -64,46 +57,11 @@ export default {
       name: 'openGraph',
       description: 'These values populate meta tags',
       type: 'openGraph'
-    }
-    /*
+    },
     {
       name: 'experiment',
-      type: 'object',
-      description: 'Use this to A/B/n test this route towards different pages',
-      fields: [
-        {
-          name: 'active',
-          type: 'boolean',
-          title: 'Experiment',
-          description: '(De)activate this as a experiment'
-        },
-        {
-          name: 'id',
-          type: 'string',
-          title: 'Google Experiment ID',
-          description:
-            'You will have to create an experiment with a correct number of variations on Google Optimize first'
-        },
-        {
-          name: 'variations',
-          type: 'array',
-          description:
-            'These are the different variations (pages) this route will point to in this experiment',
-          of: [{ type: 'variation' }],
-          validation: Rule =>
-            Rule.custom(value => {
-              if (!value) {
-                return true
-              }
-              let sum = 0
-              value.forEach(variation => {
-                sum += variation.percentage
-              })
-
-              return sum > 100 ? 'Total percentage cannot exceed 100%' : true
-            })
-        }
-      ]
+      type: 'experiment',
+      description: 'Use this to A/B/n test this route towards different pages'
     },
     {
       title: 'Include in sitemap',
@@ -119,7 +77,6 @@ export default {
       type: 'boolean',
       fieldset: 'visibility'
     }
-    */
   ],
   initialValue: {
     useSiteTitle: false

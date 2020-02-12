@@ -31,7 +31,6 @@ function LayoutContainer(props) {
         return (
           <Layout
             {...props}
-            navMenuItems={props.navMenuItems || []}
             showNav={showNav}
             siteTitle={data.site.title}
             onHideNav={handleHideNav}

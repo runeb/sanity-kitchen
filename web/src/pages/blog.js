@@ -22,7 +22,7 @@ export const query = graphql`
   query BlogPageQuery {
     cover: file(relativePath: { eq: "cover.jpg" }) {
       childImageSharp {
-        fixed(width: 2400) {
+        fixed(width: 2048) {
           ...GatsbyImageSharpFixed
         }
       }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { graphql } from "gatsby";
 
 import Hero from "../components/hero";
@@ -13,18 +13,86 @@ import SEO from "../components/seo";
 import Layout from "../containers/layout";
 
 export const query = graphql`
+  fragment NavMenu on SanityNavigationMenu {
+    items {
+      title
+      kind
+      link
+      internalLink {
+        ... on SanityPost {
+          _type
+          slug {
+            current
+          }
+        }
+        ... on SanityRoute {
+          id
+          _type
+          slug {
+            current
+          }
+        }
+      }
+    }
+  }
+  fragment SanityImage on SanityMainImage {
+    alt
+    crop {
+      _key
+      _type
+      top
+      bottom
+      left
+      right
+    }
+    hotspot {
+      _key
+      _type
+      x
+      y
+      height
+      width
+    }
+    asset {
+      _id
+      metadata {
+        lqip
+        dimensions {
+          aspectRatio
+          width
+          height
+        }
+      }
+    }
+  }
+
+  fragment PageInfo on SanityPage {
+    id
+    navMenu {
+      ...NavMenu
+    }
+    _rawContent(resolveReferences: { maxDepth: 10 })
+    title
+  }
+
   query PageTemplateQuery($id: String!) {
     route: sanityRoute(id: { eq: $id }) {
       slug {
         current
       }
       useSiteTitle
-      page {
-        title
-        _rawContent(resolveReferences: { maxDepth: 10 })
+      experiment {
+        variations {
+          page {
+            ...PageInfo
+          }
+          variationId
+          percentage
+        }
+        active
       }
-      navMenu {
-        _rawItems(resolveReferences: { maxDepth: 10 })
+      page {
+        ...PageInfo
       }
     }
     site: sanitySiteSettings(_id: { regex: "/(drafts.|)siteSettings/" }) {
@@ -65,7 +133,29 @@ const Page = props => {
     );
   }
 
-  const content = data.route.page._rawContent
+  // Runtime A/B test variant pick. If we are at build time,
+  // use the statically referenced 'page' property
+  /*
+  const [testPage, setPage] = useState(null);
+
+  if (
+    !testPage &&
+    typeof window !== "undefined" &&
+    data.route.experiment &&
+    data.route.experiment.active === true &&
+    data.route.experiment.variations.length > 0
+  ) {
+    // TODO: This choice should be preserved in localStorage
+    // so the user always sees the same variant
+    const variations = data.route.experiment.variations;
+    const pick = variations[Math.floor(Math.random() * variations.length)].page;
+    setPage(pick);
+  }
+  */
+
+  const page = data.route.page;
+
+  const content = page._rawContent
     .filter(c => !c.disabled)
     .map((c, i) => {
       let el = null;
@@ -108,8 +198,8 @@ const Page = props => {
     to: (site.secondaryColor && site.secondaryColor.hex) || "#daae51"
   };
 
-  const menuItems = data.route.navMenu && (data.route.navMenu._rawItems || []);
-  const pageTitle = !data.route.useSiteTitle && data.route.page.title;
+  const menuItems = page.navMenu && (page.navMenu.items || []);
+  const pageTitle = !data.route.useSiteTitle && page.title;
 
   return (
     <Layout navMenuItems={menuItems}>

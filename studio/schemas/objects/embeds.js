@@ -2,7 +2,7 @@ import MdVideocam from 'react-icons/lib/md/videocam'
 import MdPhotoCamera from 'react-icons/lib/md/photo-camera'
 
 import InstagramPreview from '../components/preview/Instagram'
-import YoutubePreview from '../components/preview/YouTube'
+import EmbedPlayer from '../components/preview/EmbedPlayer'
 
 export const instagram = {
   type: 'object',
@@ -22,10 +22,10 @@ export const instagram = {
   }
 }
 
-export const youtube = {
+export const videoEmbed = {
   type: 'object',
-  name: 'youtube',
-  title: 'YouTube Video',
+  name: 'videoEmbed',
+  title: 'Video Embed',
   icon: MdVideocam,
   fields: [
     {
@@ -35,6 +35,6 @@ export const youtube = {
   ],
   preview: {
     select: { url: 'url' },
-    component: YoutubePreview
+    component: EmbedPlayer
   }
 }

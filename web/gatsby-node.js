@@ -27,7 +27,8 @@ async function createLandingPages(pathPrefix = "/", graphql, actions, reporter) 
   const routeEdges = (result.data.allSanityRoute || {}).edges || [];
   routeEdges.forEach(edge => {
     const { id, slug = {} } = edge.node;
-    const path = [pathPrefix, edge.node.slug.current, "/"].join("");
+    const path =
+      slug.current === "frontpage" ? pathPrefix : [pathPrefix, slug.current, "/"].join("");
     reporter.info(`Creating landing page: ${path}`);
     createPage({
       path,

@@ -56,6 +56,6 @@ export default {
       options: { hotspot: true }
     },
     { type: 'instagram' },
-    { type: 'youtube' }
+    { type: 'videoEmbed' }
   ]
 }
