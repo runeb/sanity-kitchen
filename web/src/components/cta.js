@@ -1,6 +1,6 @@
 import React from "react";
 import PortableText from "../components/portableText";
-import { ctaColumns } from "../../../studio/schemas/plugs";
+import CTAction from "./CTAction";
 
 const CTA = ({ label, title, body, ctas }) => (
   <section className="container mx-auto text-center py-6 mb-12">
@@ -14,15 +14,9 @@ const CTA = ({ label, title, body, ctas }) => (
     </p>
 
     <div className="flex">
-      {ctas.map((c, i) => {
-        return (
-          <div key={`cta_${i}`} className="flex-1 text-gray-700 text-center px-4 py-2 m-2">
-            <button className="mx-auto ml-4 hover:underline bg-white text-gray-800 font-bold rounded-full my-6 py-4 px-8 shadow-lg">
-              {c.title}
-            </button>
-          </div>
-        );
-      })}
+      {ctas.map((c, i) => (
+        <CTAction {...c} key={`cta_${i}`} />
+      ))}
     </div>
   </section>
 );
