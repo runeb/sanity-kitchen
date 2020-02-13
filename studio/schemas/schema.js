@@ -35,11 +35,30 @@ const allPlugs = Object.values(plugs).map(plug => {
   return { ...plug, fields: plugDefaultFields.concat(plug.fields) }
 })
 
+const review = {
+  type: 'document',
+  name: 'workflow.status',
+  fields: [
+    {
+      title: 'Document',
+      name: 'doc',
+      type: 'reference',
+      weak: true,
+      to: [{ type: 'post' }]
+    },
+    {
+      name: 'rev',
+      type: 'string'
+    }
+  ]
+}
+
 export default createSchema({
   name: 'blog',
   types: schemaTypes // Built-in types
     // Our custom types
     .concat([
+      review,
       variation,
       openGraph,
       experiment,

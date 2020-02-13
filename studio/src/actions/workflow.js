@@ -1,6 +1,8 @@
 import React from 'react'
 import { useDocumentOperation } from '@sanity/react-hooks'
 import { PublishAction } from 'part:@sanity/base/document-actions'
+import client from 'part:@sanity/base/client'
+import userStore from 'part:@sanity/base/user'
 
 import { icons } from '../structure/blog'
 
@@ -51,6 +53,15 @@ export function PublishApproved(props) {
   }
 }
 
+const createStatus = async (id, rev, status) => {
+  client.createOrReplace({
+    _type: 'workflow.status',
+    rev,
+    docId: id,
+    status
+  })
+}
+
 export function RejectAction({ id, type, published, draft, onComplete }) {
   if (type !== 'post') return null
   if (!hasStatus(draft, 'review')) return null
@@ -93,19 +104,6 @@ export function RejectAction({ id, type, published, draft, onComplete }) {
       )
     }
   }
-
-  /*
-
-  return {
-    label: 'Reject',
-    onHandle: () => {
-      patch.execute([
-      ])
-      commit.execute()
-      onComplete()
-    }
-  }
-  */
 }
 
 export function Approve({ id, type, published, draft, onComplete }) {
@@ -140,9 +138,20 @@ export function RequestReview({ id, type, published, draft, onComplete }) {
   return {
     label: 'Request review',
     onHandle: () => {
-      patch.execute(setEditorialState('review'))
-      commit.execute()
-      onComplete()
+      const userSubscription = userStore.currentUser.subscribe({
+        next: evt => {
+          return client
+            .createOrReplace({
+              _type: 'workflow.status',
+              _id: `workflow.${id}.${draft._rev}`,
+              rev: draft._rev,
+              status: 'review',
+              user: evt.user.id
+            })
+            .then(() => onComplete())
+        },
+        error: error => console.error('Failed to get current user', error)
+      })
     }
   }
 }

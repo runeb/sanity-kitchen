@@ -16,12 +16,6 @@ export const icons = {
   AllIcon
 }
 
-/*
-import BlogPostStats from '../components/gaPanes/views/BlogPostStats'
-import BlogPostPublishedAndBounces from '../components/gaPanes/views/BlogPostPublishedAndBounces'
-*/
-
-// Generate structure from the type options
 const editorialStatusList = [
   {
     title: 'Waiting for review',
@@ -40,9 +34,7 @@ const editorialStatusList = [
   }
 ]
 
-//editorial.fields.find(({ name }) => name === 'status').options.list || []
-
-const gaPanes = [
+const panes = [
   /*
   S.view
     .component(BlogPostStats)
@@ -60,7 +52,7 @@ const blog = S.listItem()
   .icon(BlogIcon)
   .child(
     S.list()
-      .title('sanity.io/blog')
+      .title('/blog posts')
       .items([
         ...editorialStatusList.map(({ title, value, icon }) =>
           S.listItem()
@@ -69,6 +61,7 @@ const blog = S.listItem()
             .child(
               S.documentList()
                 .title(title)
+                .schemaType('post')
                 .filter('editorialStatus.current == $status')
                 .params({ status: value })
             )
@@ -76,8 +69,8 @@ const blog = S.listItem()
         S.divider(),
         S.listItem()
           .title('Published posts')
-          .schemaType('post')
           .icon(BlogIcon)
+          .schemaType('post')
           .child(
             S.documentList('post')
               .title('Published posts')
@@ -87,32 +80,12 @@ const blog = S.listItem()
                 S.document()
                   .documentId(documentId)
                   .schemaType('post')
-                  .views([S.view.form(), ...gaPanes])
+                  .views([S.view.form(), ...panes])
               )
           ),
         S.documentTypeListItem('post')
           .title('All posts')
           .icon(AllIcon)
-        /*
-        S.listItem()
-          .title('Scheduled posts')
-          .schemaType('post')
-          .child(
-            S.documentList('post')
-              .title('Scheduled posts')
-              .menuItems(S.documentTypeList('post').getMenuItems())
-              .filter('_type == "post" && publishedAt > now()')
-          ),
-        S.listItem()
-          .title('Unpublished posts')
-          .schemaType('post')
-          .child(
-            S.documentList('post')
-              .title('Unpublished posts')
-              .menuItems(S.documentTypeList('post').getMenuItems())
-              .filter('_type == "post" && !(defined(publishedAt))')
-          )
-          */
       ])
   )
 
