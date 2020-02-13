@@ -56,6 +56,14 @@
     {
       "implements": "part:@sanity/dashboard/config",
       "path": "dashboardConfig.js"
+    },
+    {
+      "implements": "part:@sanity/base/document-actions/resolver",
+      "path": "resolveDocumentActions.js"
+    },
+    {
+      "implements": "part:@sanity/base/document-badges/resolver",
+      "path": "src/resolveDocumentBadges.js"
     }
   ]
 }

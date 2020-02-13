@@ -21,6 +21,7 @@ import plugDefaultFields from './plugs/_plugDefaultFields'
 
 // Object types
 import { instagram, videoEmbed } from './objects/embeds'
+import editorialStatus from './objects/editorialStatus'
 import cta from './objects/cta'
 import bodyPortableText from './objects/bodyPortableText'
 import excerptPortableText from './objects/excerptPortableText'
@@ -46,6 +47,7 @@ export default createSchema({
       link,
       simpleBlockContent,
       cta,
+      editorialStatus,
       siteSettings,
       post,
       navMenu,
