@@ -7,7 +7,7 @@ import CTAction from "./CTAction";
 import { getFluidGatsbyImage } from "gatsby-source-sanity";
 const maybeImage = illustration => {
   let img = null;
-  if (illustration && illustration.disabled !== true && illustration.image) {
+  if (illustration && illustration.image && illustration.image.asset && !illustration.disabled) {
     const fluidProps = getFluidGatsbyImage(
       illustration.image.asset._id,
       { maxWidth: 960 },
