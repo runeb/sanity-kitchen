@@ -1,63 +1,41 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { useDocumentOperation } from '@sanity/react-hooks'
-import { PublishAction } from 'part:@sanity/base/document-actions'
+import client from 'part:@sanity/base/client'
 
 import { icons } from '../structure/blog'
 
-function setEditorialState(newState) {
-  return [
+// Get the latest workflow status for a draft revision
+async function workflowStatus(draft) {
+  return client.fetch(
+    " *[_type == 'workflow.status' && draft == $id && revision == $revision] | order(_updatedAt desc)[0]",
     {
-      setIfMissing: {
-        editorialStatus: {
-          _type: 'editorialStatus'
-        }
-      }
-    },
-    {
-      set: {
-        editorialStatus: {
-          current: newState
-        }
-      }
+      id: draft._id,
+      revision: draft._rev
     }
-  ]
+  )
 }
 
-function editorialStatus(object) {
-  return object && object.editorialStatus && object.editorialStatus.current
-}
-
-function hasStatus(object, status) {
-  return editorialStatus(object) === status
-}
-
-export function PublishApproved(props) {
-  if (!props.draft) return PublishAction(props)
-  if (props.type === 'post') {
-    if (!hasStatus(props.draft, 'approved')) return null
-  }
-
-  const { patch, commit, publish } = useDocumentOperation(props.id, props.type)
-  return {
-    label: 'Publish',
-    onHandle: () => {
-      patch.execute([
-        {
-          unset: ['editorialStatus']
-        }
-      ])
-      publish.execute()
-    }
-  }
+async function createReviewStatus(draft, status) {
+  const doc = await client.create({
+    _type: 'workflow.status',
+    draft: draft._id,
+    revision: draft._rev,
+    status
+  })
+  return doc
 }
 
 export function RejectAction({ id, type, published, draft, onComplete }) {
-  if (type !== 'post') return null
-  if (!hasStatus(draft, 'review')) return null
-
+  if (!draft) return null
   const [reason, setReason] = React.useState('')
   const [isDialogOpen, setDialogOpen] = React.useState(false)
-  const { patch, commit } = useDocumentOperation(id, type)
+  const [status, setStatus] = React.useState(null)
+  useMemo(async () => {
+    const res = await workflowStatus(draft)
+    setStatus(res)
+  }, [draft])
+
+  if (!status || status.status !== 'review') return null
 
   return {
     icon: icons.RejectedIcon,
@@ -73,18 +51,8 @@ export function RejectAction({ id, type, published, draft, onComplete }) {
           <input type="text" onChange={event => setReason(event.target.value)} />
           <button
             onClick={() => {
-              patch.execute([
-                {
-                  set: {
-                    editorialStatus: {
-                      current: 'rejected',
-                      reason
-                    }
-                  }
-                }
-              ])
-              commit.execute()
               setDialogOpen(false)
+              onComplete()
             }}
           >
             Done
@@ -109,52 +77,56 @@ export function RejectAction({ id, type, published, draft, onComplete }) {
 }
 
 export function Approve({ id, type, published, draft, onComplete }) {
-  if (type !== 'post') return null
-  if (!hasStatus(draft, 'review')) return null
+  if (!draft) return null
+  const [status, setStatus] = React.useState(null)
+  useMemo(async () => {
+    const res = await workflowStatus(draft)
+    setStatus(res)
+  }, [draft])
 
-  const { patch, commit } = useDocumentOperation(id, type)
+  if (!status || status.status !== 'review') return null
+
   return {
     label: 'Approve',
     onHandle: () => {
-      patch.execute([
-        {
-          set: {
-            editorialStatus: {
-              current: 'approved'
-            }
-          }
-        }
-      ])
-      commit.execute()
       onComplete()
     }
   }
 }
 
-export function RequestReview({ id, type, published, draft, onComplete }) {
-  if (type !== 'post' || !draft) return null
-  if (hasStatus(draft, 'review')) return null
-  if (hasStatus(draft, 'approved')) return null
+export function RequestReview({ id, type, draft, onComplete }) {
+  if (!draft) return null
+  const [status, setStatus] = React.useState(null)
+  useMemo(async () => {
+    const res = await workflowStatus(draft)
+    setStatus(res)
+  }, [draft])
 
-  const { patch, commit } = useDocumentOperation(id, type)
+  if (!status || ['review', 'approved'].includes(status.status)) return null
+
   return {
+    disabled: !draft,
     label: 'Request review',
-    onHandle: () => {
-      patch.execute(setEditorialState('review'))
-      commit.execute()
-      onComplete()
+    onHandle: async () => {
+      return createReviewStatus(draft, 'review').then(onComplete)
     }
   }
 }
 
 // Badges
 
-export function WorkflowBadge(props) {
-  if (props.type !== 'post') return null
-  const status = editorialStatus(props.draft)
+export function WorkflowBadge({ draft }) {
+  if (!draft) return null
+
+  const [status, setStatus] = React.useState(null)
+  useMemo(async () => {
+    const res = await workflowStatus(draft)
+    setStatus(res)
+  }, [draft])
+
   if (!status) return null
 
-  switch (status) {
+  switch (status.status) {
     case 'rejected':
       return {
         label: 'Rejected',

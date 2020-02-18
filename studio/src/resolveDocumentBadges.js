@@ -3,5 +3,8 @@ import { WorkflowBadge } from './actions/workflow'
 
 export default function resolveDocumentBadges(props) {
   const badges = defaultResolve(props)
-  return [...badges, WorkflowBadge]
+  if (props.type === 'post') {
+    return [...badges, WorkflowBadge]
+  }
+  return badges
 }

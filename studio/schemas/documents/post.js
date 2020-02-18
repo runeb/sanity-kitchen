@@ -6,11 +6,6 @@ export default {
   title: 'Blog Post',
   fields: [
     {
-      name: 'editorialStatus',
-      type: 'editorialStatus',
-      hidden: true
-    },
-    {
       name: 'title',
       type: 'string',
       title: 'Title',

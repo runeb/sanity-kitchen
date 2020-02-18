@@ -1,11 +1,15 @@
 // import the default document actions
-import defaultResolve, { PublishAction, DuplicateAction } from 'part:@sanity/base/document-actions'
-import { useDocumentOperation } from '@sanity/react-hooks'
-import { RejectAction, Approve, PublishApproved, RequestReview } from './src/actions/workflow'
+import defaultResolve, {
+  PublishAction,
+  DuplicateAction,
+  DiscardChangesAction
+} from 'part:@sanity/base/document-actions'
+
+import { RejectAction, Approve, RequestReview } from './src/actions/workflow'
 
 const actionsMap = {
   siteSettings: {
-    siteSettings: [PublishAction]
+    siteSettings: [PublishAction, DiscardChangesAction]
   },
   page: {
     frontpage: [PublishAction, DuplicateAction]
@@ -23,12 +27,14 @@ const filteredDefaultActions = props => {
 }
 
 export default function resolveDocumentActions(props) {
-  const result = [
-    Approve,
-    RejectAction,
-    RequestReview,
-    PublishApproved,
-    ...filteredDefaultActions(props)
-  ]
-  return result
+  if (props.type === 'post') {
+    return [
+      RequestReview,
+      Approve,
+      RejectAction,
+      ...defaultResolve(props).filter(a => a !== PublishAction)
+    ]
+  }
+
+  return filteredDefaultActions(props).filter(r => r !== null)
 }
