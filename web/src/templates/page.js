@@ -82,6 +82,7 @@ const Page = props => {
     data.route.experiment.active === true &&
     data.route.experiment.variations.length > 1
   ) {
+    console.log(data.route);
     // TODO: This choice should be preserved in localStorage
     // so the user always sees the same variant
     const variations = data.route.experiment.variations;
@@ -91,7 +92,7 @@ const Page = props => {
 
   const page = testPage || data.route.page;
 
-  const content = page._rawContent
+  const content = (page._rawContent || [])
     .filter(c => !c.disabled)
     .map((c, i) => {
       let el = null;

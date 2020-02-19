@@ -1,11 +1,17 @@
 // import the default document actions
+import React, { useMemo } from 'react'
 import defaultResolve, {
   PublishAction,
   DuplicateAction,
   DiscardChangesAction
 } from 'part:@sanity/base/document-actions'
 
-import { RejectAction, Approve, RequestReview } from './src/actions/workflow'
+import {
+  PublishAction as PublishApprovedAction,
+  RejectAction,
+  Approve,
+  RequestReview
+} from './src/actions/workflow'
 
 const actionsMap = {
   siteSettings: {
@@ -17,24 +23,31 @@ const actionsMap = {
 }
 
 const filteredDefaultActions = props => {
+  /*
   if (actionsMap[props.type]) {
     if (actionsMap[props.type][props.id]) {
       return actionsMap[props.type][props.id]
     }
   }
+  */
 
-  return defaultResolve(props).filter(a => a !== PublishAction)
+  return defaultResolve(props)
 }
 
 export default function resolveDocumentActions(props) {
+  console.log('resolveDocumentActions()', props.id)
+  let actions
   if (props.type === 'post') {
-    return [
+    actions = [
       RequestReview,
       Approve,
       RejectAction,
+      PublishAction,
       ...defaultResolve(props).filter(a => a !== PublishAction)
     ]
+  } else {
+    actions = filteredDefaultActions(props)
   }
 
-  return filteredDefaultActions(props).filter(r => r !== null)
+  return actions.filter(r => r !== null)
 }

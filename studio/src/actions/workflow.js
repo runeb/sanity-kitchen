@@ -1,28 +1,38 @@
 import React, { useMemo } from 'react'
 import { useDocumentOperation } from '@sanity/react-hooks'
+import { PublishAction } from 'part:@sanity/base/document-actions'
 import client from 'part:@sanity/base/client'
-
 import { icons } from '../structure/blog'
 
 // Get the latest workflow status for a draft revision
 async function workflowStatus(draft) {
-  return client.fetch(
-    " *[_type == 'workflow.status' && draft == $id && revision == $revision] | order(_updatedAt desc)[0]",
-    {
-      id: draft._id,
-      revision: draft._rev
-    }
-  )
+  if (!draft) return null
+
+  return client.fetch('* [_id == $id][0]{_rev}', { id: draft._id }).then(doc => {
+    console.log('draft', draft, doc)
+    return client.fetch(
+      " *[_type == 'workflow.status' && draft == $id && revision == $revision] | order(_updatedAt desc)[0]",
+      {
+        id: draft._id,
+        revision: doc._rev
+      }
+    )
+  })
 }
 
-async function createReviewStatus(draft, status) {
+async function createReviewStatus(draft, status, reason) {
   const doc = await client.create({
     _type: 'workflow.status',
     draft: draft._id,
     revision: draft._rev,
-    status
+    status,
+    reason
   })
   return doc
+}
+
+export function PublishApprovedAction(props) {
+  return PublishAction(props)
 }
 
 export function RejectAction({ id, type, published, draft, onComplete }) {
@@ -30,6 +40,7 @@ export function RejectAction({ id, type, published, draft, onComplete }) {
   const [reason, setReason] = React.useState('')
   const [isDialogOpen, setDialogOpen] = React.useState(false)
   const [status, setStatus] = React.useState(null)
+
   useMemo(async () => {
     const res = await workflowStatus(draft)
     setStatus(res)
@@ -50,7 +61,8 @@ export function RejectAction({ id, type, published, draft, onComplete }) {
           <h2>Reason</h2>
           <input type="text" onChange={event => setReason(event.target.value)} />
           <button
-            onClick={() => {
+            onClick={async () => {
+              await createReviewStatus(draft, 'rejected', reason)
               setDialogOpen(false)
               onComplete()
             }}
@@ -88,7 +100,8 @@ export function Approve({ id, type, published, draft, onComplete }) {
 
   return {
     label: 'Approve',
-    onHandle: () => {
+    onHandle: async () => {
+      await createReviewStatus(draft, 'approved')
       onComplete()
     }
   }
@@ -102,13 +115,14 @@ export function RequestReview({ id, type, draft, onComplete }) {
     setStatus(res)
   }, [draft])
 
-  if (!status || ['review', 'approved'].includes(status.status)) return null
+  if (status && ['review', 'approved'].includes(status.status)) return null
 
   return {
     disabled: !draft,
     label: 'Request review',
     onHandle: async () => {
-      return createReviewStatus(draft, 'review').then(onComplete)
+      await createReviewStatus(draft, 'review')
+      onComplete()
     }
   }
 }
