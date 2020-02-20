@@ -23,7 +23,8 @@
     "@sanity/code-input",
     "@sanity/color-input",
     "mux-input",
-    "google-analytics"
+    "google-analytics",
+    "@sanity/production-preview"
   ],
   "parts": [
     {
@@ -39,12 +40,8 @@
       "path": "dashboardConfig.js"
     },
     {
-      "implements": "part:@sanity/base/document-actions/resolver",
-      "path": "resolveDocumentActions.js"
-    },
-    {
-      "implements": "part:@sanity/base/document-badges/resolver",
-      "path": "src/resolveDocumentBadges.js"
+      "implements": "part:@sanity/production-preview/resolve-production-url",
+      "path": "./resolvePreviewUrl.js"
     }
   ]
 }

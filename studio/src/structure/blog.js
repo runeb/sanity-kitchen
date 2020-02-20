@@ -8,6 +8,8 @@ import {
   GoArchive as AllIcon
 } from 'react-icons/lib/go'
 
+import PreviewIFrame from '../../src/components/previewIFrame'
+
 export const icons = {
   BlogIcon,
   ApprovedIcon,
@@ -62,6 +64,7 @@ const blog = S.listItem()
     S.list()
       .title('sanity.io/blog')
       .items([
+        /*
         ...editorialStatusList.map(({ title, value, icon }) =>
           S.listItem()
             .title(title)
@@ -74,6 +77,7 @@ const blog = S.listItem()
             )
         ),
         S.divider(),
+        */
         S.listItem()
           .title('Published posts')
           .schemaType('post')
@@ -87,7 +91,7 @@ const blog = S.listItem()
                 S.document()
                   .documentId(documentId)
                   .schemaType('post')
-                  .views([S.view.form(), ...gaPanes])
+                  .views([S.view.form(), PreviewIFrame()])
               )
           ),
         S.documentTypeListItem('post')
