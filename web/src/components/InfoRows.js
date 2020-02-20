@@ -58,7 +58,7 @@ const InfoRowFlipped = props => {
 };
 
 const InfoRows = props => {
-  const contentRows = props.rows
+  const contentRows = (props.rows || [])
     .filter(r => !r.disabled)
     .map((r, i) => {
       return i % 2 === 0 ? <InfoRow key={r._key} {...r} /> : <InfoRowFlipped key={r._key} {...r} />;

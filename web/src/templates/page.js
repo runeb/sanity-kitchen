@@ -80,9 +80,9 @@ const Page = props => {
     typeof window !== "undefined" &&
     data.route.experiment &&
     data.route.experiment.active === true &&
+    data.route.experiment.variations &&
     data.route.experiment.variations.length > 1
   ) {
-    console.log(data.route);
     // TODO: This choice should be preserved in localStorage
     // so the user always sees the same variant
     const variations = data.route.experiment.variations;
