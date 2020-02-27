@@ -1,0 +1,8 @@
+name = "kitchen-studio"
+type = "webpack"
+account_id = "aac1f2f1bd0c35cc34957f2593accd09"
+workers_dev = true
+
+[site]
+bucket = "./dist"
+entry-point = "workers-site"
