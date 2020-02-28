@@ -1,7 +1,8 @@
 const env = process.env.NODE_ENV || 'development'
 
 export default function resolvePreviewUrl(document) {
-  const baseUrl = 'https://kitchen-preview.sanity.work'
+  const baseUrl =
+    env === 'development' ? 'http://localhost:8000' : 'https://kitchen-preview.sanity.work'
   switch (document._type) {
     case 'route':
       return `${baseUrl}/${document.slug.current}`
