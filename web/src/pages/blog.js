@@ -29,7 +29,7 @@ export const query = graphql`
     }
     posts: allSanityPost(
       sort: { fields: [publishedAt], order: DESC }
-      filter: { slug: { current: { ne: null } }, publishedAt: { ne: null } }
+      filter: { slug: { current: { ne: null } }, isPublished: { eq: true } }
     ) {
       edges {
         node {

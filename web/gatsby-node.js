@@ -5,6 +5,21 @@ const { isFuture } = require("date-fns");
  * See: https://www.gatsbyjs.org/docs/node-apis/
  */
 
+exports.createSchemaCustomization = ({ actions, schema }) => {
+  actions.createTypes([
+    schema.buildObjectType({
+      name: "SanityPost",
+      interfaces: ["Node"],
+      fields: {
+        isPublished: {
+          type: "Boolean!",
+          resolve: source => new Date(source.publishedAt) <= new Date()
+        }
+      }
+    })
+  ]);
+};
+
 async function createLandingPages(pathPrefix = "/", graphql, actions, reporter) {
   const { createPage } = actions;
   const result = await graphql(`
@@ -42,7 +57,7 @@ async function createBlogPostPages(pathPrefix = "/blog", graphql, actions, repor
   const { createPage } = actions;
   const result = await graphql(`
     {
-      allSanityPost(filter: { slug: { current: { ne: null } }, publishedAt: { ne: null } }) {
+      allSanityPost(filter: { slug: { current: { ne: null } }, isPublished: { eq: true } }) {
         edges {
           node {
             id
