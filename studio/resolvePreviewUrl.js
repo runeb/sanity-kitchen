@@ -11,9 +11,10 @@ export default function resolvePreviewUrl(document) {
     case 'siteSettings':
       return baseUrl
     case 'page':
-      if (document._id === 'frontpage') {
+      if (document._id === 'frontpage' || document._id === 'drafts.frontpage') {
         return baseUrl
       }
+      return null
     default:
       return null
   }
