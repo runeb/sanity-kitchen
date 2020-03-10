@@ -21,7 +21,8 @@ export default () =>
   S.list()
     .title('Content')
     .items([
-      S.listItem()
+      S.documentListItem()
+        .schemaType('siteSettings')
         .title('Site settings')
         .icon(GoSettings)
         .child(
@@ -30,8 +31,9 @@ export default () =>
             .documentId('siteSettings')
             .views([S.view.form(), PreviewIFrame()])
         ),
-      S.listItem()
+      S.documentListItem()
         .title('Frontpage')
+        .schemaType('page')
         .icon(GoHome)
         .child(
           S.document()
